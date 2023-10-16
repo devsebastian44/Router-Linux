@@ -24,7 +24,11 @@ En resumen, Ubuntu Server puede desempeñar varias funciones como enrutador Linu
 
 ### Configuración
 
-Para configurar ubuntu server 20 como router linux debes tener dos interfaces de red con la siguiebte configuracion
+<p align="center">
+<img src="./Img/Topologia.png">
+</p>
+
+Para configurar ubuntu server 20.04 como router linux debes tener dos interfaces de red con la siguiebte configuracion
 
 
 sudo nano /etc/netplan/00-installer-config.yaml
