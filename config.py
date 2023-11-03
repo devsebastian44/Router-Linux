@@ -51,3 +51,36 @@ os.system("iptables -A INPUT -p tcp --syn -j DROP")
 os.system("iptables -N SCANNER_PROTECTION")
 os.system("iptables -A SCANNER_PROTECTION -p tcp --tcp-flags ALL NONE -j DROP")
 os.system("iptables -A SCANNER_PROTECTION -p tcp --tcp-flags SYN,FIN -j DROP")
+# Permitir el tráfico relacionado y establecido
+os.system("iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT")
+os.system("iptables -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT")
+# Permitir el tráfico de loopback (comunicación interna)
+os.system("iptables -A INPUT -i lo -j ACCEPT")
+os.system("iptables -A OUTPUT -o lo -j ACCEPT")
+# Bloquear el tráfico no deseado
+os.system("iptables -A INPUT -p icmp --icmp-type echo-request -j DROP")
+
+# Instalar bind9 y bind9-utils
+os.system("sudo apt install bind9 bind9-utils -y")
+
+# Configuraciones del servidor DNS
+os.system("sudo rm -r /etc/bind/named.conf.options")
+os.system("sudo cp /DNS/named.conf.options /etc/bind/")
+os.system("sudo rm -r /etc/default/named")
+os.system("sudo cp /DNS/named /etc/default/")
+os.system("sudo systemctl restart bind9")
+os.system("sudo rm -r /etc/bind/named.conf.local")
+os.system("sudo cp /DNS/named.conf.local /etc/bind/")
+os.system("sudo mkdir /etc/bind/zonas")
+os.system("sudo cp /DNS/db.router.local /etc/bind/zonas/")
+os.system("sudo cp /DNS/db.10.10.10 /etc/bind/zonas/")
+os.system("sudo systemctl restart bind9")
+
+# Configuraciones del servidor DHCP
+os.system("sudo apt-get install isc-dhcp-server")
+os.system("sudo rm -r /etc/dhcp/dhcpd.conf")
+os.system("sudo cp /DHCP/dhcpd.conf /etc/dhcp/")
+os.system("sudo rm -r /etc/default/isc-dhcp-server")
+os.system("sudo cp /DHCP/isc-dhcp-server /etc/default/")
+os.system("sudo dhcpd -t -cf /etc/dhcp/dhcpd.conf")
+os.system("sudo service isc-dhcp-server restart")

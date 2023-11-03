@@ -45,6 +45,12 @@ network:
          addresses: [8.8.8.8, 8.8.4.4]
 ```
 
+Luego vamos a configurar el archivo /etc/default/isc-dhcp-server en la carpeta DHCP
+
+```
+INTERFACESv4="enp0s8" (El segundo adaptador de red)
+```
+
 Luego vamos a clonar el repositorio
 
 ```

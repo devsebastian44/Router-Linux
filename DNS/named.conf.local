@@ -1,0 +1,17 @@
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+zone "router.local" IN { 
+        type master;
+        file "/etc/bind/zonas/db.router.local";
+};
+
+zone "10.10.10.in-addr-.arpa" {
+       type master; 
+       file "/etc/bind/zonas/db.10.10.10";
+};
