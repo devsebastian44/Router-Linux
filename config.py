@@ -27,8 +27,8 @@ def obtener_adaptador_principal():
                 adaptador = partes[4]
                 return adaptador
 
-        # Si no se encontró la línea con "default via", informar que no se pudo determinar
-        return "No se pudo determinar el adaptador principal"
+        # Si no se encontró la línea con "default via", informar que no se determinar
+        return "No se determinar el adaptador principal"
 
     except Exception as e:
         return f"Error al obtener el adaptador principal: {str(e)}"
@@ -61,26 +61,26 @@ os.system("iptables -A OUTPUT -o lo -j ACCEPT")
 os.system("iptables -A INPUT -p icmp --icmp-type echo-request -j DROP")
 
 # Instalar bind9 y bind9-utils
-os.system("sudo apt install bind9 bind9-utils -y")
+os.system("apt install bind9 bind9-utils -y")
 
 # Configuraciones del servidor DNS
-os.system("sudo rm -r /etc/bind/named.conf.options")
-os.system("sudo cp /DNS/named.conf.options /etc/bind/")
-os.system("sudo rm -r /etc/default/named")
-os.system("sudo cp /DNS/named /etc/default/")
-os.system("sudo systemctl restart bind9")
-os.system("sudo rm -r /etc/bind/named.conf.local")
-os.system("sudo cp /DNS/named.conf.local /etc/bind/")
-os.system("sudo mkdir /etc/bind/zonas")
-os.system("sudo cp /DNS/db.router.local /etc/bind/zonas/")
-os.system("sudo cp /DNS/db.10.10.10 /etc/bind/zonas/")
-os.system("sudo systemctl restart bind9")
+os.system("rm -r /etc/bind/named.conf.options")
+os.system("cp /DNS/named.conf.options /etc/bind/")
+os.system("rm -r /etc/default/named")
+os.system("cp /DNS/named /etc/default/")
+os.system("systemctl restart bind9")
+os.system("rm -r /etc/bind/named.conf.local")
+os.system("cp /DNS/named.conf.local /etc/bind/")
+os.system("mkdir /etc/bind/zonas")
+os.system("cp /DNS/db.router.local /etc/bind/zonas/")
+os.system("cp /DNS/db.10.10.10 /etc/bind/zonas/")
+os.system("systemctl restart bind9")
 
 # Configuraciones del servidor DHCP
-os.system("sudo apt-get install isc-dhcp-server")
-os.system("sudo rm -r /etc/dhcp/dhcpd.conf")
-os.system("sudo cp /DHCP/dhcpd.conf /etc/dhcp/")
-os.system("sudo rm -r /etc/default/isc-dhcp-server")
-os.system("sudo cp /DHCP/isc-dhcp-server /etc/default/")
-os.system("sudo dhcpd -t -cf /etc/dhcp/dhcpd.conf")
-os.system("sudo service isc-dhcp-server restart")
+os.system("apt-get install isc-dhcp-server")
+os.system("rm -r /etc/dhcp/dhcpd.conf")
+os.system("cp /DHCP/dhcpd.conf /etc/dhcp/")
+os.system("rm -r /etc/default/isc-dhcp-server")
+os.system("cp /DHCP/isc-dhcp-server /etc/default/")
+os.system("dhcpd -t -cf /etc/dhcp/dhcpd.conf")
+os.system("service isc-dhcp-server restart")
