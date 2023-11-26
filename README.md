@@ -56,7 +56,7 @@ Luego vamos a clonar el repositorio
 ```
 git clone https://github.com/SebastianZhunaula/Router-Linux.git
 
-sudo chmod +x config.py
+sudo chmod +x config.sh
 
-sudo python3 config.py
+sudo bash config.sh
 ```
