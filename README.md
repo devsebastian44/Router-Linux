@@ -37,12 +37,14 @@ sudo nano /etc/netplan/00-installer-config.yaml
 network:
   ethernets:
     enp0s3:
-      dhcp4: true
+      addresses: [192.168.1.2/24]
+      gateway4: 192.168.1.1
     enp0s8:
        addresses: [10.10.10.1/24]
        #gateway4: 192.168.1.1
        nameservers:
-         addresses: [8.8.8.8, 8.8.4.4]
+         addresses: [10.10.10.1]
+  version 2
 ```
 
 Luego vamos a configurar el archivo /etc/default/isc-dhcp-server en la carpeta DHCP
