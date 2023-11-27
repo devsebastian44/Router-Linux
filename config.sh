@@ -41,23 +41,21 @@ sysctl -p /etc/sysctl.conf
 iptables -L
 iptables -L -nv -t nat
 iptables --table nat --append POSTROUTING --out-interface $adaptador -j MASQUERADE
-apt-get install iptables-persistent
-netfilter-persistent save
 # Protección contra ataques SYN flood
-iptables -A INPUT -p tcp --syn -m limit -- 5/s -j ACCEPT
+iptables -A INPUT -p tcp --syn -m limit --limit 5/s -j ACCEPT
 iptables -A INPUT -p tcp --syn -j DROP
 # Evitar escaneo de puertos
 iptables -N SCANNER_PROTECTION
 iptables -A SCANNER_PROTECTION -p tcp --tcp-flags ALL NONE -j DROP
-iptables -A SCANNER_PROTECTION -p tcp --tcp-flags SYN,FIN -j DROP
+iptables -A SCANNER_PROTECTION -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
 # Permitir el tráfico relacionado y establecido
 iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
-# Permitir el tráfico de loopback (comunicación interna)
-iptables -A INPUT -i lo -j ACCEPT
-iptables -A OUTPUT -o lo -j ACCEPT
 # Bloquear el tráfico no deseado
 iptables -A INPUT -p icmp --icmp-type echo-request -j DROP
+
+apt-get install iptables-persistent
+netfilter-persistent save
 
 # Instalar bind9 y bind9-utils
 apt install bind9 bind9-utils -y
