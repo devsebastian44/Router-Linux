@@ -56,7 +56,7 @@ INTERFACESv4="enp0s8" (El segundo adaptador de red)
 Luego vamos a clonar el repositorio
 
 ```
-git clone https://github.com/SebastianZhunaula/Router-Linux.git
+git clone https://github.com/Devsebastian31/Router-Linux.git
 
 sudo chmod +x config.sh
 
