@@ -44,7 +44,7 @@ network:
        #gateway4: 192.168.1.1
        nameservers:
          addresses: [10.10.10.1]
-  version 2
+  version: 2
 ```
 
 Luego vamos a configurar el archivo /etc/default/isc-dhcp-server en la carpeta DHCP
