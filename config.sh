@@ -61,24 +61,24 @@ netfilter-persistent save
 apt install bind9 bind9-utils -y
 
 # Configuraciones del servidor DNS
-rm -r /etc/bind/named.conf.options
-cp /DNS/named.conf.options /etc/bind/
-rm -r /etc/default/named
-cp /DNS/named /etc/default/
+rm -r etc/bind/named.conf.options
+cp DNS/named.conf.options etc/bind/
+rm -r etc/default/named
+cp DNS/named etc/default/
 systemctl restart bind9
-rm -r /etc/bind/named.conf.local
-cp /DNS/named.conf.local /etc/bind/
-mkdir /etc/bind/zonas
-cp /DNS/db.router.local /etc/bind/zonas/
-cp /DNS/db.10.10.10 /etc/bind/zonas/
+rm -r etc/bind/named.conf.local
+cp DNS/named.conf.local etc/bind/
+mkdir etc/bind/zonas
+cp DNS/db.router.local etc/bind/zonas/
+cp DNS/db.10.10.10 etc/bind/zonas/
 systemctl restart bind9
 
 # Configuraciones del servidor DHCP
 apt-get install isc-dhcp-server
-rm -r /etc/dhcp/dhcpd.conf
-cp /DHCP/dhcpd.conf /etc/dhcp/
-rm -r /etc/default/isc-dhcp-server
-cp /DHCP/isc-dhcp-server /etc/default/
-dhcpd -t -cf /etc/dhcp/dhcpd.conf
+rm -r etc/dhcp/dhcpd.conf
+cp DHCP/dhcpd.conf etc/dhcp/
+rm -r etc/default/isc-dhcp-server
+cp DHCP/isc-dhcp-server etc/default/
+dhcpd -t -cf etc/dhcp/dhcpd.conf
 service isc-dhcp-server restart
 
