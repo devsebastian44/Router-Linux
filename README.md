@@ -4,8 +4,7 @@
   <img src="./Img/Logo.png" height="300px" width="350px">
 </p>
 
-Un **router Linux** es un enrutador de red que utiliza una distribución de Linux como base para su sistema operativo.  
-Este proyecto te permite configurar **Ubuntu Server 20.04** como un router funcional, con múltiples servicios de red integrados.
+Un **router Linux** es un enrutador de red que utiliza una distribución de Linux como base para su sistema operativo. Este proyecto te permite configurar **Ubuntu Server 20.04** como un router funcional, con múltiples servicios de red integrados.
 
 ---
 
@@ -108,5 +107,4 @@ Router-Linux/
 
 ## 📜 Licencia
 
-Este proyecto está bajo la licencia MIT.  
-Puedes usarlo libremente con fines educativos y de investigación.
+Este proyecto está bajo la licencia MIT. Puedes usarlo libremente con fines educativos y de investigación.
