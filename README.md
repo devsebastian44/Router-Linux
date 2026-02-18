@@ -96,15 +96,3 @@ bash tests/syntax_check.sh
 Este proyecto incluye configuraciones de firewall que modifican deliberadamente el flujo de tráfico de red. 
 - **No ejecutar en un servidor de producción** sin entender las implicaciones.
 - Las reglas de `iptables` son estrictas; asegurar acceso físico a consola o IP de gestión fuera de banda para evitar bloqueos vía SSH.
-
----
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
-
----
-
-<p align="center">
-  <sub>Diseñado para Fines Educativos y Portafolio Profesional</sub>
-</p>
