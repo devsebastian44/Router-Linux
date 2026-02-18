@@ -1,0 +1,19 @@
+# Logs
+*.log
+*.backup.*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.idea/
+.vscode/
+
+# Build/Temp
+tmp/
+*.swp
+
+# Sensitive/Local
+.env
+configs/local/

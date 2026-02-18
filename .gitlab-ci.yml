@@ -1,0 +1,13 @@
+stages:
+  - test
+
+test_syntax:
+  stage: test
+  image: bash:latest
+  script:
+    - apk add --no-cache grep
+    - echo "Running syntax check..."
+    - bash tests/syntax_check.sh
+  only:
+    - main
+    - merge_requests
