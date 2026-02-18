@@ -8,6 +8,12 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 BOLD='\033[1m'
 
+# Configuración de Rutas
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+DHCP_DIR="$PROJECT_ROOT/configs/dhcp"
+DNS_DIR="$PROJECT_ROOT/configs/dns"
+
 # Archivo de log
 LOG_FILE="router_setup.log"
 
@@ -265,8 +271,8 @@ configurar_dns() {
     log "Iniciando configuración de DNS"
     
     # Verificar si existen los archivos de configuración
-    if [ ! -d "DNS" ]; then
-        echo -e "${RED}[!]${NC} No se encuentra el directorio 'DNS' con las configuraciones"
+    if [ ! -d "$DNS_DIR" ]; then
+        echo -e "${RED}[!]${NC} No se encuentra el directorio '$DNS_DIR' con las configuraciones"
         echo -e "${YELLOW}[?]${NC} ¿Deseas continuar sin configurar DNS? [S/n]"
         read -r respuesta
         if [[ "$respuesta" =~ ^[Nn]$ ]]; then
@@ -297,31 +303,34 @@ configurar_dns() {
     # Copiar configuraciones
     echo -e "${YELLOW}[*]${NC} Copiando configuraciones DNS..."
     
-    if [ -f "DNS/named.conf.options" ]; then
-        cp DNS/named.conf.options /etc/bind/
+    # Copiar configuraciones
+    echo -e "${YELLOW}[*]${NC} Copiando configuraciones DNS..."
+    
+    if [ -f "$DNS_DIR/named.conf.options" ]; then
+        cp "$DNS_DIR/named.conf.options" /etc/bind/
         echo -e "${GREEN}[✓]${NC} named.conf.options copiado"
     fi
     
-    if [ -f "DNS/named" ]; then
-        cp DNS/named /etc/default/
+    if [ -f "$DNS_DIR/named" ]; then
+        cp "$DNS_DIR/named" /etc/default/
         echo -e "${GREEN}[✓]${NC} named copiado"
     fi
     
-    if [ -f "DNS/named.conf.local" ]; then
-        cp DNS/named.conf.local /etc/bind/
+    if [ -f "$DNS_DIR/named.conf.local" ]; then
+        cp "$DNS_DIR/named.conf.local" /etc/bind/
         echo -e "${GREEN}[✓]${NC} named.conf.local copiado"
     fi
     
     # Crear directorio de zonas
     mkdir -p /etc/bind/zonas
     
-    if [ -f "DNS/db.router.local" ]; then
-        cp DNS/db.router.local /etc/bind/zonas/
+    if [ -f "$DNS_DIR/db.router.local" ]; then
+        cp "$DNS_DIR/db.router.local" /etc/bind/zonas/
         echo -e "${GREEN}[✓]${NC} db.router.local copiado"
     fi
     
-    if [ -f "DNS/db.10.10.10" ]; then
-        cp DNS/db.10.10.10 /etc/bind/zonas/
+    if [ -f "$DNS_DIR/db.10.10.10" ]; then
+        cp "$DNS_DIR/db.10.10.10" /etc/bind/zonas/
         echo -e "${GREEN}[✓]${NC} db.10.10.10 copiado"
     fi
     
@@ -360,8 +369,8 @@ configurar_dhcp() {
     log "Iniciando configuración de DHCP"
     
     # Verificar si existen los archivos de configuración
-    if [ ! -d "DHCP" ]; then
-        echo -e "${RED}[!]${NC} No se encuentra el directorio 'DHCP' con las configuraciones"
+    if [ ! -d "$DHCP_DIR" ]; then
+        echo -e "${RED}[!]${NC} No se encuentra el directorio '$DHCP_DIR' con las configuraciones"
         echo -e "${YELLOW}[?]${NC} ¿Deseas continuar sin configurar DHCP? [S/n]"
         read -r respuesta
         if [[ "$respuesta" =~ ^[Nn]$ ]]; then
@@ -391,13 +400,16 @@ configurar_dhcp() {
     # Copiar configuraciones
     echo -e "${YELLOW}[*]${NC} Copiando configuraciones DHCP..."
     
-    if [ -f "DHCP/dhcpd.conf" ]; then
-        cp DHCP/dhcpd.conf /etc/dhcp/
+    # Copiar configuraciones
+    echo -e "${YELLOW}[*]${NC} Copiando configuraciones DHCP..."
+    
+    if [ -f "$DHCP_DIR/dhcpd.conf" ]; then
+        cp "$DHCP_DIR/dhcpd.conf" /etc/dhcp/
         echo -e "${GREEN}[✓]${NC} dhcpd.conf copiado"
     fi
     
-    if [ -f "DHCP/isc-dhcp-server" ]; then
-        cp DHCP/isc-dhcp-server /etc/default/
+    if [ -f "$DHCP_DIR/isc-dhcp-server" ]; then
+        cp "$DHCP_DIR/isc-dhcp-server" /etc/default/
         echo -e "${GREEN}[✓]${NC} isc-dhcp-server copiado"
     fi
     
