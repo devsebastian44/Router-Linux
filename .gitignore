@@ -1,19 +1,28 @@
-# Logs
+# Logs and backups
 *.log
 *.backup.*
+router_setup.log
+iptables_backup_*
 
 # OS generated files
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Editor directories
 .idea/
 .vscode/
+*.swp
+*.swo
 
 # Build/Temp
 tmp/
-*.swp
+dist/
+build/
+__pycache__/
 
 # Sensitive/Local
 .env
 configs/local/
+*.key
+*.pem
