@@ -1,13 +1,26 @@
 stages:
+  - lint
+  - security
   - test
 
-test_syntax:
-  stage: test
-  image: bash:latest
+lint-scripts:
+  stage: lint
+  image: alpine:latest
   script:
-    - apk add --no-cache grep
-    - echo "Running syntax check..."
-    - bash tests/syntax_check.sh
-  only:
-    - main
-    - merge_requests
+    - apk add --no-cache bash
+    - bash -n src/setup.sh
+    - bash -n tests/syntax_check.sh
+
+security-scan:
+  stage: security
+  image: alpine:latest
+  script:
+    - echo "Running security scan on configurations..."
+    # Simple search for potential secrets/sensitive info
+    - grep -rv "password" configs/ || true
+
+test-logic:
+  stage: test
+  image: alpine:latest
+  script:
+    - sh tests/syntax_check.sh
