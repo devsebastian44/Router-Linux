@@ -1,85 +1,78 @@
-# Router Linux - Enterprise Infrastructure Appliance
+# Router Linux - Dispositivo de Infraestructura Empresarial
 
 ![Shell](https://img.shields.io/badge/Shell-Script-green?logo=gnubash&logoColor=white)
-![GitLab](https://img.shields.io/badge/GitLab-Repository-orange?logo=gitlab)
-![GitHub](https://img.shields.io/badge/GitHub-Portfolio-blue?logo=github)
+![GitLab](https://img.shields.io/badge/GitLab-Laboratorio-orange?logo=gitlab)
+![GitHub](https://img.shields.io/badge/GitHub-Portafolio-blue?logo=github)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Status](https://img.shields.io/badge/Status-Stable-brightgreen)
+![Status](https://img.shields.io/badge/Status-Estable-brightgreen)
 
-## 📋 Technical Overview
+## 📋 Visión del Proyecto
 
-**Router Linux** is a senior-level Infrastructure as Code (IaC) project designed to transform standard Linux distributions into high-performance, hardened network routers and firewalls. This project encapsulates advanced networking primitives, including **Netfilter/Iptables** stateful packet inspection, **BIND9** recursive/authoritative DNS, and **ISC-DHCP** automated addressing.
+**Router Linux** es un proyecto de nivel avanzado de Infraestructura como Código (IaC) diseñado para transformar distribuciones Linux estándar en routers y firewalls de alto rendimiento y endurecidos. Este proyecto encapsula primitivas de red avanzadas, incluyendo inspección de paquetes con estado **Netfilter/Iptables**, DNS recursivo/autoritativo **BIND9** y direccionamiento automatizado **ISC-DHCP**.
 
-This repository implements a **DevSecOps Dual-Tier Architecture**:
-- **GitLab (Private Laboratory):** The "Source of Truth" containing full logic, automated testing pipelines, and internal configurations.
-- **GitHub (Public Portfolio):** A sanitized, documentation-centric version for professional exhibition.
+Este repositorio implementa una **Arquitectura Dual DevSecOps**:
+
+- **GitLab (Laboratorio Público):** Contiene todos los archivos del proyecto como entorno completo de desarrollo y experimentación.
+
+- **GitHub (Portafolio Profesional):** Versión optimizada y documentada para exhibición profesional y colaboraciones.
 
 ---
 
-## 🏗️ Repository Architecture
+## 🏗️ Arquitectura del Repositorio
 
-The project follows a modular and scalable structure aligned with DevSecOps best practices:
+El proyecto sigue una estructura modular y escalable alineada con las mejores prácticas de DevSecOps:
 
 ```text
 Router-Linux/
-├── src/                # Core automation logic (setup.sh)
-├── docs/               # Advanced technical documentation
-├── diagrams/           # Network topologies and logical schemas
-├── configs/            # [PRIVATE] Service configuration templates (DHCP, DNS)
-├── scripts/            # [PRIVATE] Maintenance & DevSecOps tools (publish_public.ps1)
-├── tests/              # [PRIVATE] Validation & Security audit scripts
-├── .gitlab-ci.yml      # [PRIVATE] Multi-stage CI/CD Pipeline
-└── README.md           # Master documentation
+├── src/                # Lógica central de automatización (setup.sh)
+├── docs/               # Documentación técnica avanzada
+├── diagrams/           # Topologías de red y esquemas lógicos
+├── configs/            # Plantillas de configuración de servicios (DHCP, DNS)
+├── scripts/            # Herramientas de mantenimiento y DevSecOps
+├── tests/              # Scripts de validación y auditoría de seguridad
+├── .gitlab-ci.yml      # Pipeline CI/CD multi-etapa
+└── README.md           # Documentación principal
 ```
 
-### Strategic Component Isolation
+### Aislamiento Estratégico de Componentes
 
-Folders marked as `[PRIVATE]` are strictly reserved for the GitLab environment to protect internal infrastructure logic and sensitive configuration patterns.
+El repositorio de GitLab contiene todos los componentes funcionales para un entorno de desarrollo completo, mientras que la versión de GitHub se enfoca en la documentación y exhibición arquitectónica.
 
 ---
 
-## 🛡️ DevSecOps Flow: GitLab ➔ GitHub
+## 🛡️ Flujo DevSecOps: GitLab ➔ GitHub
 
-This project utilizes a customized sanitization pipeline to maintain the integrity of the public portfolio while preserving the full capabilities of the private lab.
+Este proyecto utiliza un pipeline de sincronización para mantener la coherencia entre el laboratorio completo y el portafolio profesional.
 
-### Automated Publishing Workflow
+### Flujo de Publicación Automatizado
 
-1. **Development & Verification:** All changes are committed to the `main` branch in GitLab.
-2. **Continuous Integration:** A multi-stage pipeline (`lint` -> `security` -> `test`) validates every commit.
-3. **Execution of `publish_public.ps1`:** 
-   - A dedicated PowerShell script automates the transition.
-   - **Sanitization:** Removes all sensitive components (`tests/`, `configs/`, private `scripts/`, CI logic).
-   - **Tagging:** Prepares a sanitized `public` branch.
-4. **Synchronized Push:** Forces the sanitized state to the GitHub `main` branch.
+1. **Desarrollo y Verificación:** Todos los cambios se realizan en la rama `main` de GitLab.
+2. **Integración Continua:** Un pipeline multi-etapa (`lint` -> `security` -> `test`) valida cada commit.
+3. **Sincronización:** El contenido optimizado se publica automáticamente en GitHub.
+4. **Mantenimiento:** La versión de GitHub se mantiene como portafolio profesional actualizado.
 
 > [!NOTE]
-> This strategy ensures that the public version remains high-level and focused on architecture, while the private version remains fully functional and secure.
+> Esta estrategia asegura que el portafolio público permanezca enfocado en la arquitectura y documentación, mientras que el laboratorio mantiene todas las capacidades funcionales.
 
 ---
 
-## 🚀 Key Features
+## 🚀 Características Principales
 
-*   **Automated Provisioning:** Idempotent setup via `src/setup.sh`.
-*   **Packet Filtering & Hardening:**
-    *   Stateful Packet Inspection (SPI) ruleset.
-    *   Hardening against TCP SYN floods and stealth port scans.
-    *   Sophisticated NAT/Masquerading for internal segments.
-*   **Infrastructure Services:**
-    *   **DNS:** Local resolution and caching with BIND9.
-    *   **DHCP:** Dynamic lease management for LAN isolation (10.10.10.0/24).
-
----
-
-## 🧪 Validation & Ethics
-
-### Professional Standards
-All code follows strict shell-scripting standards (ShellCheck compliant) and maintains a clear separation between logic and data.
-
-### Ethical Disclaimer
-This project is intended for educational and professional networking research. The firewall configurations provided are strict; improper use in production environments without proper console access could result in self-lockout.
+*   **Aprovisionamiento Automatizado:** Configuración idempotente mediante `src/setup.sh`.
+*   **Filtrado de Paquetes y Endurecimiento:**
+    *   Conjunto de reglas de Inspección de Paquetes con Estado (SPI).
+    *   Endurecimiento contra inundaciones TCP SYN y escaneos de puertos sigilosos.
+    *   NAT/Mascareado sofisticado para segmentos internos.
+*   **Servicios de Infraestructura:**
+    *   **DNS:** Resolución local y caché con BIND9.
+    *   **DHCP:** Gestión dinámica de leases para aislamiento LAN (10.10.10.0/24).
 
 ---
 
-## ⚖️ License
+## 🧪 Validación y Ética
 
-Distributed under the MIT License. See `LICENSE` for more information.
+### Estándares Profesionales
+Todo el código sigue estándares estrictos de scripting en shell (compatible con ShellCheck) y mantiene una clara separación entre lógica y datos.
+
+### Descargo de Responsabilidad Ético
+Este proyecto está destinado a investigación educativa y de redes profesionales. Las configuraciones de firewall proporcionadas son estrictas; el uso inadecuado en entornos de producción sin acceso adecuado a la consola podría resultar en bloqueo propio.
