@@ -30,6 +30,7 @@ Router-Linux/
 ```
 
 ### Topología de Red
+
 El sistema está diseñado para operar con una arquitectura de red de doble interfaz:
 - **Interfaz WAN:** Conecta al ISP/Red Externa.
 - **Interfaz LAN:** Sirve a los clientes internos (10.10.10.0/24).
@@ -53,9 +54,17 @@ El sistema está diseñado para operar con una arquitectura de red de doble inte
 ## 🛠️ Uso
 
 ### Pre-requisitos
+
 - Ubuntu Server 20.04 LTS (o SO compatible basado en Debian).
 - Privilegios de root (`sudo`).
 - Dos interfaces de red.
+
+## 🚀 Instalación y Acceso
+
+> [!IMPORTANT]
+> El repositorio completo con todo el código funcional está disponible en **GitLab** para acceso completo.
+
+https://gitlab.com/group-programming-lab/Router-Linux
 
 ### Instalación
 
@@ -79,6 +88,7 @@ El sistema está diseñado para operar con una arquitectura de red de doble inte
 ## 🧪 Pruebas y Validación
 
 ### Pruebas Automatizadas
+
 Este proyecto usa **GitLab CI/CD** para validar la sintaxis e integridad de la configuración.
 Para ejecutar pruebas localmente:
 ```bash
@@ -86,6 +96,7 @@ bash tests/syntax_check.sh
 ```
 
 ### Verificación Manual
+
 - **Verificar Estado:** Usar opción `[6]` en el menú para verificar estado de servicios.
 - **Logs:** Logs de instalación disponibles en `router_setup.log`.
 
