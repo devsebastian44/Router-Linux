@@ -23,4 +23,5 @@ test-logic:
   stage: test
   image: alpine:latest
   script:
-    - sh tests/syntax_check.sh
+    - apk add --no-cache bash
+    - bash tests/syntax_check.sh

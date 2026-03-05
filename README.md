@@ -56,6 +56,14 @@ Este proyecto utiliza un pipeline de sincronización para mantener la coherencia
 
 ---
 
+## 🚀 Uso e Instalación (Entorno Privado)
+
+> [!IMPORTANT]
+> El repositorio completo con todo el código funcional (tests, src, binarios construíbles) está disponible operativamente en **GitLab** para su análisis y ejecución integral.
+
+https://gitlab.com/group-programming-lab/Router-Linux.git
+
+
 ## 🚀 Características Principales
 
 *   **Aprovisionamiento Automatizado:** Configuración idempotente mediante `src/setup.sh`.
