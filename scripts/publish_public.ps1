@@ -45,10 +45,10 @@ git rm -r --cached configs/ -f 2>$null
 git rm -r --cached scripts/ -f 2>$null
 git rm --cached .gitlab-ci.yml -f 2>$null
 
-# 6. Commit de Lanzamiento y Push al Portafolio (Portfolio)
+# 6. Commit de Lanzamiento y Push al Portafolio (GitHub)
 git commit -m "docs: release update to public portfolio (sanitized)" --allow-empty
-Write-Host "[*] Subiendo al Portafolio (portfolio)..." -ForegroundColor Green
-git push portfolio public:main --force
+Write-Host "[*] Subiendo al Portafolio (GitHub)..." -ForegroundColor Green
+git push origin public:main --force
 
 # 7. Retorno Seguro al Entorno de Trabajo (Lab)
 Write-Host "[*] Volviendo al Laboratorio (lab/main)..."
