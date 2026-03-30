@@ -217,4 +217,4 @@ Se permite el uso, copia, modificación y distribución con fines educativos y d
 **Sebastian**
 [GitHub: @devsebastian44](https://github.com/devsebastian44)
 
-> Proyecto desarrollado con fines educativos para la configuración de infraestructura de red en Ubuntu Server 20.04..
+> Proyecto desarrollado con fines educativos para la configuración de infraestructura de red en Ubuntu Server 20.04.
