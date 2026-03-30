@@ -7,6 +7,7 @@
 ![DHCP](https://img.shields.io/badge/DHCP-isc--dhcp--server-FF6600?style=flat&logo=icloud&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-brightgreen?style=flat)
 
+---
 
 ## 🧠 Overview
 
