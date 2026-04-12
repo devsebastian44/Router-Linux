@@ -55,14 +55,14 @@ El proyecto está orientado a entornos educativos, laboratorios de redes y admin
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/devsebastian44/Router-Linux.git
+git clone https://gitlab.com/group-programming-lab/Router-Linux.git
 cd Router-Linux
 
-# 2. Dar permisos de ejecución al script principal
-sudo chmod +x config.sh
+# 2. Dar permisos de ejecución al script
+sudo chmod +x src/setup.sh
 
-# 3. Ejecutar el script de configuración automática
-sudo bash config.sh
+# 3. Ejecutar el asistente de configuración
+sudo ./src/setup.sh
 ```
 
 > ⚠️ El script instalará paquetes, copiará archivos de configuración a rutas del sistema y activará servicios. Ejecutar únicamente en entornos dedicados o máquinas virtuales.
