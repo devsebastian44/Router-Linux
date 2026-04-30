@@ -9,6 +9,9 @@
 
 ---
 
+> [!IMPORTANT]
+> **Ethical Disclosure**: This project is for educational and ethical cybersecurity purposes only. The author is not responsible for any misuse or damage caused by this software. Use it only in controlled environments or laboratories.
+
 ## 🧠 Overview
 
 Este proyecto convierte una máquina con **Ubuntu Server 20.04** en un **router Linux completamente funcional** mediante un script de automatización en Bash y un conjunto de archivos de configuración de servicios de red. A partir del análisis del código y la estructura del repositorio, el sistema implementa enrutamiento de paquetes entre dos interfaces de red (`enp0s3` — WAN e `enp0s8` — LAN), habilitando NAT (Network Address Translation) con `iptables` para que los clientes de la red interna accedan a Internet a través de una sola IP pública.
@@ -55,7 +58,7 @@ El proyecto está orientado a entornos educativos, laboratorios de redes y admin
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://gitlab.com/group-programming-lab/Router-Linux.git
+git clone https://github.com/devsebastian44/Router-Linux.git
 cd Router-Linux
 
 # 2. Dar permisos de ejecución al script
@@ -129,31 +132,28 @@ Para que los clientes de la LAN obtengan conectividad, deben apuntar su gateway 
 ```
 Router-Linux/
 │
-├── config.sh                  # Script principal de automatización:
+├── src/
+│   └── setup.sh               # Script principal de automatización:
 │                              # instala paquetes, copia configs,
 │                              # activa NAT y servicios de red
 │
-├── DHCP/
-│   ├── dhcpd.conf             # Define pool de IPs, gateway y DNS
-│   │                          # para la red interna 10.10.10.0/24
-│   └── isc-dhcp-server        # Especifica la interfaz de escucha
-│                              # del daemon DHCP (enp0s8)
+├── configs/
+│   ├── dhcp/                  # Archivos de configuración DHCP:
+│   │   ├── dhcpd.conf         # Define pool de IPs, gateway y DNS
+│   │   └── isc-dhcp-server    # Especifica la interfaz de escucha
+│   │
+│   └── dns/                   # Archivos de configuración BIND9:
+│       ├── db.10.10.10        # Zona inversa: resuelve IPs → nombres
+│       ├── db.router.local    # Zona directa: resuelve nombres → IPs
+│       ├── named.conf.local   # Declaración de zonas DNS locales
+│       ├── named.conf.options # Opciones globales: forwarders, recursión
+│       └── resolv.conf        # Configuración de resolución DNS local
 │
-├── DNS/
-│   ├── db.10.10.10            # Zona inversa: resuelve IPs → nombres
-│   │                          # para el segmento 10.10.10.x
-│   ├── db.router.local        # Zona directa: resuelve nombres → IPs
-│   │                          # para el dominio router.local
-│   ├── named                  # Archivo de arranque del servicio BIND9
-│   ├── named.conf.local       # Declaración de zonas DNS locales
-│   ├── named.conf.options     # Opciones globales: forwarders,
-│   │                          # allow-query, recursión
-│   └── resolv.conf            # Configuración de resolución DNS
-│                              # del propio router
+├── diagrams/
+│   └── topology.png           # Diagrama de topología de red
 │
-├── Img/
-│   ├── Logo.png               # Logo del proyecto
-│   └── Topologia.png          # Diagrama de topología de red
+├── tests/
+│   └── syntax_check.sh        # Script de validación de sintaxis
 │
 ├── LICENSE                    # Licencia MIT
 └── README.md                  # Documentación del repositorio
@@ -175,17 +175,6 @@ Este proyecto implementa componentes sensibles de infraestructura de red. Se rec
 
 ---
 
-## 🌐 Repository Architecture
-
-Este proyecto sigue una arquitectura distribuida:
-
-- **GitHub**: Documentación pública, presentación del proyecto y referencia rápida
-- **GitLab**: Implementación completa, laboratorio de configuración y archivos de entorno de pruebas
-
-### 🔗 Full Source Code
-
-👉 Código completo disponible en GitLab: [https://gitlab.com/group-programming-lab/Router-Linux](https://gitlab.com/group-programming-lab/Router-Linux)
-
 ---
 
 ## 🚀 Roadmap
@@ -199,6 +188,20 @@ Posibles mejoras identificadas a partir del análisis del código y la estructur
 - [ ] **Monitoreo de tráfico** — Integrar herramientas como `vnstat` o `iftop` para visibilidad del uso de red.
 - [ ] **Soporte para múltiples subredes** — Extender la configuración DHCP y DNS para gestionar más de un segmento de red interno.
 - [ ] **Variables de configuración centralizadas** — Crear un archivo `.env` o de configuración que centralice IPs, nombres de interfaz y rangos DHCP.
+
+---
+
+## 🤝 Contributing
+
+¡Las contribuciones son bienvenidas! Si tienes ideas para mejorar el enrutamiento, la seguridad o la automatización, sigue estos pasos:
+
+1. Haz un **Fork** del proyecto.
+2. Crea una rama para tu funcionalidad (`git checkout -b feature/AmazingFeature`).
+3. Realiza tus cambios y haz un commit profesional (`git commit -m 'feat: add some AmazingFeature'`).
+4. Sube los cambios a tu rama (`git push origin feature/AmazingFeature`).
+5. Abre un **Pull Request**.
+
+Consulta [CONTRIBUTING.md](CONTRIBUTING.md) para más detalles.
 
 ---
 
