@@ -2,9 +2,9 @@
 
 ![Ubuntu](https://img.shields.io/badge/Ubuntu_Server-20.04-E95420?style=flat&logo=ubuntu&logoColor=white)
 ![Shell](https://img.shields.io/badge/Shell-Bash-4EAA25?style=flat&logo=gnubash&logoColor=white)
-![iptables](https://img.shields.io/badge/Firewall-iptables-003366?style=flat&logo=linux&logoColor=white)
 ![BIND9](https://img.shields.io/badge/DNS-BIND9-0078D4?style=flat&logo=cloudflare&logoColor=white)
 ![DHCP](https://img.shields.io/badge/DHCP-isc--dhcp--server-FF6600?style=flat&logo=icloud&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI%2FCD-2088FF?style=flat&logo=github-actions&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-brightgreen?style=flat)
 
 ---
