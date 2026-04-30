@@ -17,9 +17,31 @@ DNS_DIR="$PROJECT_ROOT/configs/dns"
 # Archivo de log
 LOG_FILE="router_setup.log"
 
+# Variables globales
+DRY_RUN=false
+
+# Procesar argumentos
+for arg in "$@"; do
+    case $arg in
+        --dry-run)
+            DRY_RUN=true
+            ;;
+    esac
+done
+
 # Función de logging
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
+
+# Ejecutar comandos (con soporte para dry-run)
+run_cmd() {
+    if [ "$DRY_RUN" = true ]; then
+        echo -e "${YELLOW}[DRY-RUN]${NC} $*"
+        return 0
+    else
+        eval "$@"
+    fi
 }
 
 # Banner
@@ -47,6 +69,10 @@ trap 'int_handler' INT
 
 # Verificar root
 verificar_root() {
+    if [ "$DRY_RUN" = true ]; then
+        echo -e "${YELLOW}[*]${NC} Modo simulación (Dry-run) activo. No se requieren privilegios root."
+        return 0
+    fi
     if [ "$(id -u)" != "0" ]; then
         echo -e "${RED}[!] Este script debe ejecutarse como root (usando sudo)${NC}"
         log "ERROR: Script ejecutado sin privilegios root"
@@ -59,7 +85,7 @@ backup_archivo() {
     local archivo=$1
     if [ -f "$archivo" ]; then
         local backup="${archivo}.backup.$(date +%Y%m%d_%H%M%S)"
-        cp "$archivo" "$backup"
+        run_cmd "cp \"$archivo\" \"$backup\""
         echo -e "${GREEN}[✓]${NC} Backup creado: $backup"
         log "Backup creado: $backup"
     fi
@@ -131,13 +157,13 @@ configurar_ip_forward() {
     echo -e "${YELLOW}[*]${NC} Configurando permanentemente..."
     backup_archivo "/etc/sysctl.conf"
     
-    if grep -q "^net.ipv4.ip_forward" /etc/sysctl.conf; then
-        sed -i 's/^net.ipv4.ip_forward.*/net.ipv4.ip_forward=1/' /etc/sysctl.conf
+    if grep -q "^net.ipv4.ip_forward" /etc/sysctl.conf 2>/dev/null; then
+        run_cmd "sed -i 's/^net.ipv4.ip_forward.*/net.ipv4.ip_forward=1/' /etc/sysctl.conf"
     else
-        echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+        run_cmd "echo \"net.ipv4.ip_forward=1\" >> /etc/sysctl.conf"
     fi
     
-    sysctl -p /etc/sysctl.conf >> "$LOG_FILE" 2>&1
+    run_cmd "sysctl -p /etc/sysctl.conf >> \"$LOG_FILE\" 2>&1"
     echo -e "${GREEN}[✓]${NC} IP forwarding configurado permanentemente"
     log "IP forwarding configurado en sysctl.conf"
     
@@ -160,19 +186,19 @@ configurar_iptables() {
     read -r respuesta
     if [[ "$respuesta" =~ ^[Ss]$ ]]; then
         echo -e "${YELLOW}[*]${NC} Limpiando reglas existentes..."
-        iptables -F
-        iptables -X
-        iptables -t nat -F
-        iptables -t nat -X
-        iptables -t mangle -F
-        iptables -t mangle -X
+        run_cmd "iptables -F"
+        run_cmd "iptables -X"
+        run_cmd "iptables -t nat -F"
+        run_cmd "iptables -t nat -X"
+        run_cmd "iptables -t mangle -F"
+        run_cmd "iptables -t mangle -X"
         echo -e "${GREEN}[✓]${NC} Reglas limpiadas"
         log "Reglas de iptables limpiadas"
     fi
     
     # NAT/Masquerading
     echo -e "\n${YELLOW}[*]${NC} Configurando NAT/Masquerading..."
-    if iptables --table nat --append POSTROUTING --out-interface "$adaptador" -j MASQUERADE; then
+    if run_cmd "iptables --table nat --append POSTROUTING --out-interface \"$adaptador\" -j MASQUERADE"; then
         echo -e "${GREEN}[✓]${NC} NAT configurado en $adaptador"
         log "NAT configurado en $adaptador"
     else
@@ -182,44 +208,44 @@ configurar_iptables() {
     
     # Protección contra SYN flood
     echo -e "${YELLOW}[*]${NC} Configurando protección contra SYN flood..."
-    iptables -A INPUT -p tcp --syn -m limit --limit 5/s -j ACCEPT
-    iptables -A INPUT -p tcp --syn -j DROP
+    run_cmd "iptables -A INPUT -p tcp --syn -m limit --limit 5/s -j ACCEPT"
+    run_cmd "iptables -A INPUT -p tcp --syn -j DROP"
     echo -e "${GREEN}[✓]${NC} Protección SYN flood configurada"
     log "Protección SYN flood configurada"
     
     # Protección contra escaneo de puertos
     echo -e "${YELLOW}[*]${NC} Configurando protección contra escaneo..."
-    iptables -N SCANNER_PROTECTION 2>/dev/null || iptables -F SCANNER_PROTECTION
-    iptables -A SCANNER_PROTECTION -p tcp --tcp-flags ALL NONE -j DROP
-    iptables -A SCANNER_PROTECTION -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
-    iptables -A SCANNER_PROTECTION -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
-    iptables -A INPUT -j SCANNER_PROTECTION
+    run_cmd "iptables -N SCANNER_PROTECTION 2>/dev/null || iptables -F SCANNER_PROTECTION"
+    run_cmd "iptables -A SCANNER_PROTECTION -p tcp --tcp-flags ALL NONE -j DROP"
+    run_cmd "iptables -A SCANNER_PROTECTION -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP"
+    run_cmd "iptables -A SCANNER_PROTECTION -p tcp --tcp-flags SYN,RST SYN,RST -j DROP"
+    run_cmd "iptables -A INPUT -j SCANNER_PROTECTION"
     echo -e "${GREEN}[✓]${NC} Protección contra escaneo configurada"
     log "Protección contra escaneo configurada"
     
     # Permitir tráfico establecido
     echo -e "${YELLOW}[*]${NC} Permitiendo tráfico relacionado y establecido..."
-    iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
-    iptables -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
-    iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+    run_cmd "iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT"
+    run_cmd "iptables -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT"
+    run_cmd "iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT"
     echo -e "${GREEN}[✓]${NC} Tráfico establecido permitido"
     log "Tráfico RELATED,ESTABLISHED permitido"
     
     # Permitir loopback
     echo -e "${YELLOW}[*]${NC} Permitiendo tráfico loopback..."
-    iptables -A INPUT -i lo -j ACCEPT
-    iptables -A OUTPUT -o lo -j ACCEPT
+    run_cmd "iptables -A INPUT -i lo -j ACCEPT"
+    run_cmd "iptables -A OUTPUT -o lo -j ACCEPT"
     echo -e "${GREEN}[✓]${NC} Loopback permitido"
     
     # ICMP (ping) - Opcional
     echo -e "\n${YELLOW}[?]${NC} ¿Deseas bloquear ping (ICMP)? [s/N]"
     read -r respuesta
     if [[ "$respuesta" =~ ^[Ss]$ ]]; then
-        iptables -A INPUT -p icmp --icmp-type echo-request -j DROP
+        run_cmd "iptables -A INPUT -p icmp --icmp-type echo-request -j DROP"
         echo -e "${GREEN}[✓]${NC} Ping bloqueado"
         log "ICMP echo-request bloqueado"
     else
-        iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+        run_cmd "iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT"
         echo -e "${GREEN}[✓]${NC} Ping permitido"
         log "ICMP echo-request permitido"
     fi
@@ -237,12 +263,12 @@ guardar_iptables() {
     echo -e "${BOLD}=== GUARDANDO REGLAS DE IPTABLES ===${NC}"
     
     # Verificar si iptables-persistent está instalado
-    if ! dpkg -l | grep -q iptables-persistent; then
+    if ! dpkg -l | grep -q iptables-persistent 2>/dev/null; then
         echo -e "${YELLOW}[*]${NC} Instalando iptables-persistent..."
-        echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
-        echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections
+        run_cmd "echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections"
+        run_cmd "echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections"
         
-        if apt-get install -y iptables-persistent >> "$LOG_FILE" 2>&1; then
+        if run_cmd "apt-get install -y iptables-persistent >> \"$LOG_FILE\" 2>&1"; then
             echo -e "${GREEN}[✓]${NC} iptables-persistent instalado"
             log "iptables-persistent instalado"
         else
@@ -253,7 +279,7 @@ guardar_iptables() {
     
     # Guardar reglas
     echo -e "${YELLOW}[*]${NC} Guardando reglas..."
-    if netfilter-persistent save; then
+    if run_cmd "netfilter-persistent save"; then
         echo -e "${GREEN}[✓]${NC} Reglas guardadas permanentemente"
         log "Reglas de iptables guardadas"
     else
@@ -282,9 +308,9 @@ configurar_dns() {
     fi
     
     # Instalar BIND9
-    if ! dpkg -l | grep -q "^ii.*bind9 "; then
+    if ! dpkg -l | grep -q "^ii.*bind9 " 2>/dev/null; then
         echo -e "${YELLOW}[*]${NC} Instalando BIND9..."
-        if apt-get install -y bind9 bind9-utils bind9-doc >> "$LOG_FILE" 2>&1; then
+        if run_cmd "apt-get install -y bind9 bind9-utils bind9-doc >> \"$LOG_FILE\" 2>&1"; then
             echo -e "${GREEN}[✓]${NC} BIND9 instalado"
             log "BIND9 instalado"
         else
@@ -307,17 +333,17 @@ configurar_dns() {
     echo -e "${YELLOW}[*]${NC} Copiando configuraciones DNS..."
     
     if [ -f "$DNS_DIR/named.conf.options" ]; then
-        cp "$DNS_DIR/named.conf.options" /etc/bind/
+        run_cmd "cp \"$DNS_DIR/named.conf.options\" /etc/bind/"
         echo -e "${GREEN}[✓]${NC} named.conf.options copiado"
     fi
     
     if [ -f "$DNS_DIR/named" ]; then
-        cp "$DNS_DIR/named" /etc/default/
+        run_cmd "cp \"$DNS_DIR/named\" /etc/default/"
         echo -e "${GREEN}[✓]${NC} named copiado"
     fi
     
     if [ -f "$DNS_DIR/named.conf.local" ]; then
-        cp "$DNS_DIR/named.conf.local" /etc/bind/
+        run_cmd "cp \"$DNS_DIR/named.conf.local\" /etc/bind/"
         echo -e "${GREEN}[✓]${NC} named.conf.local copiado"
     fi
     
@@ -325,18 +351,18 @@ configurar_dns() {
     mkdir -p /etc/bind/zonas
     
     if [ -f "$DNS_DIR/db.router.local" ]; then
-        cp "$DNS_DIR/db.router.local" /etc/bind/zonas/
+        run_cmd "cp \"$DNS_DIR/db.router.local\" /etc/bind/zonas/"
         echo -e "${GREEN}[✓]${NC} db.router.local copiado"
     fi
     
     if [ -f "$DNS_DIR/db.10.10.10" ]; then
-        cp "$DNS_DIR/db.10.10.10" /etc/bind/zonas/
+        run_cmd "cp \"$DNS_DIR/db.10.10.10\" /etc/bind/zonas/"
         echo -e "${GREEN}[✓]${NC} db.10.10.10 copiado"
     fi
     
     # Verificar configuración
     echo -e "${YELLOW}[*]${NC} Verificando configuración DNS..."
-    if named-checkconf; then
+    if run_cmd "named-checkconf"; then
         echo -e "${GREEN}[✓]${NC} Configuración DNS válida"
         log "Configuración DNS validada"
     else
@@ -347,11 +373,11 @@ configurar_dns() {
     
     # Reiniciar servicio
     echo -e "${YELLOW}[*]${NC} Reiniciando BIND9..."
-    if systemctl restart bind9; then
+    if run_cmd "systemctl restart bind9"; then
         echo -e "${GREEN}[✓]${NC} BIND9 reiniciado"
         log "BIND9 reiniciado exitosamente"
         
-        if systemctl is-active --quiet bind9; then
+        if [ "$DRY_RUN" = false ] && systemctl is-active --quiet bind9; then
             echo -e "${GREEN}[✓]${NC} BIND9 está activo"
         fi
     else
@@ -380,9 +406,9 @@ configurar_dhcp() {
     fi
     
     # Instalar ISC-DHCP-SERVER
-    if ! dpkg -l | grep -q "^ii.*isc-dhcp-server"; then
+    if ! dpkg -l | grep -q "^ii.*isc-dhcp-server" 2>/dev/null; then
         echo -e "${YELLOW}[*]${NC} Instalando ISC-DHCP-SERVER..."
-        if apt-get install -y isc-dhcp-server >> "$LOG_FILE" 2>&1; then
+        if run_cmd "apt-get install -y isc-dhcp-server >> \"$LOG_FILE\" 2>&1"; then
             echo -e "${GREEN}[✓]${NC} ISC-DHCP-SERVER instalado"
             log "ISC-DHCP-SERVER instalado"
         else
@@ -404,18 +430,18 @@ configurar_dhcp() {
     echo -e "${YELLOW}[*]${NC} Copiando configuraciones DHCP..."
     
     if [ -f "$DHCP_DIR/dhcpd.conf" ]; then
-        cp "$DHCP_DIR/dhcpd.conf" /etc/dhcp/
+        run_cmd "cp \"$DHCP_DIR/dhcpd.conf\" /etc/dhcp/"
         echo -e "${GREEN}[✓]${NC} dhcpd.conf copiado"
     fi
     
     if [ -f "$DHCP_DIR/isc-dhcp-server" ]; then
-        cp "$DHCP_DIR/isc-dhcp-server" /etc/default/
+        run_cmd "cp \"$DHCP_DIR/isc-dhcp-server\" /etc/default/"
         echo -e "${GREEN}[✓]${NC} isc-dhcp-server copiado"
     fi
     
     # Verificar configuración
     echo -e "${YELLOW}[*]${NC} Verificando configuración DHCP..."
-    if dhcpd -t -cf /etc/dhcp/dhcpd.conf 2>&1 | tee -a "$LOG_FILE"; then
+    if run_cmd "dhcpd -t -cf /etc/dhcp/dhcpd.conf 2>&1 | tee -a \"$LOG_FILE\""; then
         echo -e "${GREEN}[✓]${NC} Configuración DHCP válida"
         log "Configuración DHCP validada"
     else
@@ -426,16 +452,16 @@ configurar_dhcp() {
     
     # Reiniciar servicio
     echo -e "${YELLOW}[*]${NC} Reiniciando ISC-DHCP-SERVER..."
-    if systemctl restart isc-dhcp-server; then
+    if run_cmd "systemctl restart isc-dhcp-server"; then
         echo -e "${GREEN}[✓]${NC} ISC-DHCP-SERVER reiniciado"
         log "ISC-DHCP-SERVER reiniciado exitosamente"
         
-        if systemctl is-active --quiet isc-dhcp-server; then
+        if [ "$DRY_RUN" = false ] && systemctl is-active --quiet isc-dhcp-server; then
             echo -e "${GREEN}[✓]${NC} ISC-DHCP-SERVER está activo"
         fi
     else
         echo -e "${RED}[!]${NC} Error al reiniciar ISC-DHCP-SERVER"
-        echo -e "${YELLOW}[!]${NC} Revisa los logs: systemctl status isc-dhcp-server"
+        [ "$DRY_RUN" = false ] && echo -e "${YELLOW}[!]${NC} Revisa los logs: systemctl status isc-dhcp-server"
         return 1
     fi
     
