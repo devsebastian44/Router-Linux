@@ -1,0 +1,33 @@
+name: Router-Linux CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck
+        run: shellcheck src/setup.sh tests/syntax_check.sh
+
+      - name: Run Syntax Check
+        run: bash tests/syntax_check.sh
+
+      - name: Run Dry-Run Setup
+        run: |
+          # Use a mock input to pass through the menu
+          # 1: Complete setup
+          # S: Use detected adapter
+          # N: Don't clear iptables (to avoid interactive prompt)
+          # N: Don't block ping
+          # 8: Exit
+          echo -e "1\nS\nN\nN\n8" | bash src/setup.sh --dry-run

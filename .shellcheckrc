@@ -1,0 +1,8 @@
+# ShellCheck configuration file
+
+# Use bash for all .sh files
+shell=bash
+
+# Disable some warnings if necessary
+# SC2034: Variable appears unused (often used in functions)
+# disable=SC2034
