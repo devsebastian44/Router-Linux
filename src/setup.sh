@@ -40,7 +40,7 @@ run_cmd() {
         echo -e "${YELLOW}[DRY-RUN]${NC} $*"
         return 0
     else
-        eval "$@"
+        eval "$*"
     fi
 }
 
@@ -84,7 +84,8 @@ verificar_root() {
 backup_archivo() {
     local archivo=$1
     if [ -f "$archivo" ]; then
-        local backup="${archivo}.backup.$(date +%Y%m%d_%H%M%S)"
+        local backup
+        backup="${archivo}.backup.$(date +%Y%m%d_%H%M%S)"
         run_cmd "cp \"$archivo\" \"$backup\""
         echo -e "${GREEN}[✓]${NC} Backup creado: $backup"
         log "Backup creado: $backup"
@@ -96,7 +97,8 @@ obtener_adaptador_principal() {
     echo -e "${YELLOW}[*]${NC} Detectando adaptador de red principal..."
     
     # Método 1: ip route
-    local adaptador=$(ip route | grep default | awk '{print $5}' | head -n 1)
+    local adaptador
+    adaptador=$(ip route | grep default | awk '{print $5}' | head -n 1)
     
     if [ -z "$adaptador" ]; then
         # Método 2: route -n
@@ -127,7 +129,8 @@ listar_adaptadores() {
     echo -e "\n${BOLD}Adaptadores de red disponibles:${NC}"
     ip -br link show | while read -r iface state rest; do
         if [ "$iface" != "lo" ]; then
-            local ip_addr=$(ip -4 addr show "$iface" 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -n1)
+            local ip_addr
+            ip_addr=$(ip -4 addr show "$iface" 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -n1)
             if [ -n "$ip_addr" ]; then
                 echo -e "  ${GREEN}[✓]${NC} $iface - $state - IP: $ip_addr"
             else
@@ -474,7 +477,8 @@ mostrar_estado() {
     echo -e "${BOLD}=== ESTADO DEL SISTEMA ===${NC}"
     
     # IP Forwarding
-    local ipfwd=$(cat /proc/sys/net/ipv4/ip_forward)
+    local ipfwd
+    ipfwd=$(cat /proc/sys/net/ipv4/ip_forward)
     if [ "$ipfwd" = "1" ]; then
         echo -e "${GREEN}[✓]${NC} IP Forwarding: Habilitado"
     else
@@ -498,10 +502,12 @@ mostrar_estado() {
     
     # Reglas de iptables
     echo -e "\n${BOLD}Reglas de iptables activas:${NC}"
-    local reglas=$(iptables -L | grep -c "^Chain")
+    local reglas
+    reglas=$(iptables -L | grep -c "^Chain")
     echo -e "  Chains configuradas: $reglas"
     
-    local nat=$(iptables -t nat -L POSTROUTING | grep -c MASQUERADE)
+    local nat
+    nat=$(iptables -t nat -L POSTROUTING | grep -c MASQUERADE)
     if [ "$nat" -gt 0 ]; then
         echo -e "${GREEN}[✓]${NC} NAT/Masquerading: $nat regla(s)"
     else
@@ -525,18 +531,18 @@ menu_principal() {
         echo "[8] Salir"
         echo
         
-        read -p "$(echo -e ${BOLD}[+] Seleccione una opción: ${NC})" opcion
+        read -r -p "$(echo -e "${BOLD}"[+] Seleccione una opción: "${NC}")" opcion
         
         case $opcion in
             1)
                 # Configuración completa
-                local adaptador=$(obtener_adaptador_principal)
-                if [ $? -eq 0 ]; then
+                local adaptador
+                if adaptador=$(obtener_adaptador_principal); then
                     listar_adaptadores
                     echo -e "\n${YELLOW}[?]${NC} ¿Usar adaptador $adaptador? [S/n]"
                     read -r respuesta
                     if [[ "$respuesta" =~ ^[Nn]$ ]]; then
-                        read -p "$(echo -e ${BOLD}Ingresa el nombre del adaptador: ${NC})" adaptador
+                        read -r -p "$(echo -e "${BOLD}"Ingresa el nombre del adaptador: "${NC}")" adaptador
                     fi
                     
                     configurar_ip_forward && \
@@ -547,31 +553,31 @@ menu_principal() {
                     
                     mostrar_estado
                 fi
-                read -p "$(echo -e \\n${BOLD}Presiona ENTER para continuar...${NC})"
+                read -r -p "$(echo -e \\n"${BOLD}"Presiona ENTER para continuar..."${NC}")"
                 ;;
             2)
                 configurar_ip_forward
-                read -p "$(echo -e \\n${BOLD}Presiona ENTER para continuar...${NC})"
+                read -r -p "$(echo -e \\n"${BOLD}"Presiona ENTER para continuar..."${NC}")"
                 ;;
             3)
-                local adaptador=$(obtener_adaptador_principal)
-                if [ $? -eq 0 ]; then
+                local adaptador
+                if adaptador=$(obtener_adaptador_principal); then
                     configurar_iptables "$adaptador"
                     guardar_iptables
                 fi
-                read -p "$(echo -e \\n${BOLD}Presiona ENTER para continuar...${NC})"
+                read -r -p "$(echo -e \\n"${BOLD}"Presiona ENTER para continuar..."${NC}")"
                 ;;
             4)
                 configurar_dns
-                read -p "$(echo -e \\n${BOLD}Presiona ENTER para continuar...${NC})"
+                read -r -p "$(echo -e \\n"${BOLD}"Presiona ENTER para continuar..."${NC}")"
                 ;;
             5)
                 configurar_dhcp
-                read -p "$(echo -e \\n${BOLD}Presiona ENTER para continuar...${NC})"
+                read -r -p "$(echo -e \\n"${BOLD}"Presiona ENTER para continuar..."${NC}")"
                 ;;
             6)
                 mostrar_estado
-                read -p "$(echo -e \\n${BOLD}Presiona ENTER para continuar...${NC})"
+                read -r -p "$(echo -e \\n"${BOLD}"Presiona ENTER para continuar..."${NC}")"
                 ;;
             7)
                 if [ -f "$LOG_FILE" ]; then
@@ -581,7 +587,7 @@ menu_principal() {
                 else
                     echo -e "${YELLOW}[!]${NC} No hay archivo de log disponible"
                 fi
-                read -p "$(echo -e \\n${BOLD}Presiona ENTER para continuar...${NC})"
+                read -r -p "$(echo -e \\n"${BOLD}"Presiona ENTER para continuar..."${NC}")"
                 ;;
             8)
                 clear
